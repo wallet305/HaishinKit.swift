@@ -17,6 +17,7 @@ final class H264Encoder: NSObject {
         "bitrate",
         "profileLevel",
         "dataRateLimits",
+        "canPerformMultiPasses",
         "enabledHardwareEncoder", // macOS only
         "maxKeyFrameIntervalDuration",
         "scalingMode"
@@ -25,7 +26,7 @@ final class H264Encoder: NSObject {
     static let defaultWidth: Int32 = 480
     static let defaultHeight: Int32 = 272
     static let defaultBitrate: UInt32 = 160 * 1024
-    static let defaultScalingMode: String = "Trim"
+    static let defaultScalingMode: String = ScalingMode.trim.rawValue
 
     #if os(iOS)
     static let defaultAttributes: [NSString: AnyObject] = [
@@ -82,7 +83,6 @@ final class H264Encoder: NSObject {
             setProperty(kVTCompressionPropertyKey_AverageBitRate, Int(bitrate) as CFTypeRef)
         }
     }
-
     @objc var dataRateLimits: [Int] = H264Encoder.defaultDataRateLimits {
         didSet {
             guard dataRateLimits != oldValue else {
@@ -109,6 +109,14 @@ final class H264Encoder: NSObject {
                 return
             }
             setProperty(kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, NSNumber(value: maxKeyFrameIntervalDuration))
+        }
+    }
+    @objc var canPerformMultiPasses: Bool = false {
+        didSet {
+            guard canPerformMultiPasses != oldValue else {
+                return
+            }
+            invalidateSession = true
         }
     }
 
@@ -200,8 +208,21 @@ final class H264Encoder: NSObject {
         }
         let encoder: H264Encoder = Unmanaged<H264Encoder>.fromOpaque(refcon).takeUnretainedValue()
         encoder.formatDescription = CMSampleBufferGetFormatDescription(sampleBuffer)
-        encoder.delegate?.sampleOutput(video: sampleBuffer)
+        if encoder.canPerformMultiPasses {
+            encoder.performMultiPasses(sampleBuffer)
+        } else {
+            encoder.delegate?.sampleOutput(video: sampleBuffer)
+        }
     }
+
+    private var storage: VTMultiPassStorage? {
+        didSet {
+            if let oldValue: VTMultiPassStorage = oldValue {
+                VTMultiPassStorageClose(oldValue)
+            }
+        }
+    }
+    private var frameSilo: VTFrameSilo?
 
     private var _session: VTCompressionSession?
     private var session: VTCompressionSession? {
@@ -223,9 +244,19 @@ final class H264Encoder: NSObject {
                     return nil
                 }
                 invalidateSession = false
+                supportedProperty = _session?.copySupportedPropertyDictionary()
+                if canPerformMultiPasses {
+                    status = VTMultiPassStorageCreate(kCFAllocatorDefault, nil, kCMTimeRangeInvalid, nil, &storage)
+                    if let storage: VTMultiPassStorage = storage {
+                        VTSessionSetProperty(_session!, kVTCompressionPropertyKey_MultiPassStorage, storage)
+                    }
+                    status = VTFrameSiloCreate(kCFAllocatorDefault, nil, kCMTimeRangeInvalid, nil, &frameSilo)
+                }
                 status = VTSessionSetProperties(_session!, properties as CFDictionary)
                 status = VTCompressionSessionPrepareToEncodeFrames(_session!)
-                supportedProperty = _session?.copySupportedPropertyDictionary()
+                if canPerformMultiPasses {
+                    status = VTCompressionSessionBeginPass(_session!, VTCompressionSessionOptionFlags.beginFinalPass, nil)
+                }
             }
             return _session
         }
@@ -242,6 +273,8 @@ final class H264Encoder: NSObject {
             return
         }
         if invalidateSession {
+            frameSilo = nil
+            storage = nil
             session = nil
         }
         guard let session: VTCompressionSession = session else {
@@ -259,6 +292,14 @@ final class H264Encoder: NSObject {
         )
         if !muted {
             lastImageBuffer = imageBuffer
+        }
+    }
+
+    func performMultiPasses(_ sampleBuffer: CMSampleBuffer) {
+        VTFrameSiloAddSampleBuffer(frameSilo!, sampleBuffer)
+        VTFrameSiloCallBlockForEachSampleBuffer(frameSilo!, kCMTimeRangeInvalid) { (sampleBuffer) -> OSStatus in
+            self.delegate?.sampleOutput(video: sampleBuffer)
+            return noErr
         }
     }
 
@@ -320,6 +361,8 @@ extension H264Encoder: Running {
 
     func stopRunning() {
         lockQueue.async {
+            self.storage = nil
+            self.frameSilo = nil
             self.session = nil
             self.lastImageBuffer = nil
             self.formatDescription = nil
