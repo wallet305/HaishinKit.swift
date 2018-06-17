@@ -111,7 +111,7 @@ final class H264Encoder: NSObject {
             setProperty(kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, NSNumber(value: maxKeyFrameIntervalDuration))
         }
     }
-    @objc var canPerformMultiPasses: Bool = false {
+    @objc var canPerformMultiPasses: Bool = true {
         didSet {
             guard canPerformMultiPasses != oldValue else {
                 return
@@ -268,6 +268,8 @@ final class H264Encoder: NSObject {
         }
     }
 
+    private var beginPassTime = kCMTimeInvalid
+
     func encodeImageBuffer(_ imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, duration: CMTime) {
         guard running && locked == 0 else {
             return
@@ -277,9 +279,28 @@ final class H264Encoder: NSObject {
             storage = nil
             session = nil
         }
+
         guard let session: VTCompressionSession = session else {
             return
         }
+
+        if canPerformMultiPasses {
+            if let frameSilo = frameSilo, let timeRange = timeRange(presentationTimeStamp) {
+                VTCompressionSessionEndPass(session, nil, nil)
+                print("=====================\(timeRange)")
+                VTFrameSiloCallBlockForEachSampleBuffer(frameSilo, timeRange) { (sampleBuffer) -> OSStatus in
+                    print(sampleBuffer.presentationTimeStamp)
+                    return noErr
+                }
+                VTCompressionSessionBeginPass(session, VTCompressionSessionOptionFlags(rawValue: 0), nil)
+                //beginPassTime = presentationTimeStamp
+            }
+            if beginPassTime == kCMTimeInvalid {
+                beginPassTime = presentationTimeStamp
+                VTCompressionSessionBeginPass(session, VTCompressionSessionOptionFlags(rawValue: 0), nil)
+            }
+        }
+
         var flags: VTEncodeInfoFlags = []
         VTCompressionSessionEncodeFrame(
             session,
@@ -290,17 +311,27 @@ final class H264Encoder: NSObject {
             nil,
             &flags
         )
+
         if !muted {
             lastImageBuffer = imageBuffer
         }
     }
 
     func performMultiPasses(_ sampleBuffer: CMSampleBuffer) {
-        VTFrameSiloAddSampleBuffer(frameSilo!, sampleBuffer)
-        VTFrameSiloCallBlockForEachSampleBuffer(frameSilo!, kCMTimeRangeInvalid) { (sampleBuffer) -> OSStatus in
-            self.delegate?.sampleOutput(video: sampleBuffer)
-            return noErr
+        guard let frameSilo = self.frameSilo else {
+            return
         }
+        VTFrameSiloAddSampleBuffer(frameSilo, sampleBuffer)
+    }
+
+    private func timeRange(_ timestamp: CMTime) -> CMTimeRange? {
+        if beginPassTime == kCMTimeInvalid {
+            return nil
+        }
+        if 0.2 < (timestamp.seconds - beginPassTime.seconds) {
+            return CMTimeRange(start: beginPassTime, end: timestamp)
+        }
+        return nil
     }
 
     private func setProperty(_ key: CFString, _ value: CFTypeRef?) {
