@@ -219,7 +219,7 @@ open class RTMPStream: NetStream {
     static let defaultID: UInt32 = 0
     open static let defaultAudioBitrate: UInt32 = AACEncoder.defaultBitrate
     open static let defaultVideoBitrate: UInt32 = H264Encoder.defaultBitrate
-    weak open var qosDelegate: RTMPStreamQoSDelegate?
+    weak open var qosDelegate: RTMPStreamDelegate?
     open internal(set) var info: RTMPStreamInfo = RTMPStreamInfo()
     open private(set) var objectEncoding: UInt8 = RTMPConnection.defaultObjectEncoding
     @objc open private(set) dynamic var currentFPS: UInt16 = 0
@@ -304,7 +304,7 @@ open class RTMPStream: NetStream {
         self.rtmpConnection = connection
         super.init()
         dispatcher = EventDispatcher(target: self)
-        rtmpConnection.addEventListener(Event.RTMP_STATUS, selector: #selector(RTMPStream.on(status: )), observer: self)
+        rtmpConnection.addEventListener(Event.RTMP_STATUS, selector: #selector(on(status:)), observer: self)
         if rtmpConnection.connected {
             rtmpConnection.createStream(self)
         }
@@ -312,7 +312,7 @@ open class RTMPStream: NetStream {
 
     deinit {
         mixer.stopRunning()
-        rtmpConnection.removeEventListener(Event.RTMP_STATUS, selector: #selector(RTMPStream.on(status: )), observer: self)
+        rtmpConnection.removeEventListener(Event.RTMP_STATUS, selector: #selector(on(status:)), observer: self)
     }
 
     open func receiveAudio(_ flag: Bool) {

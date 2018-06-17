@@ -16,14 +16,20 @@ class TSWriter {
         if sequence <= TSWriter.defaultSegmentMaxCount {
             m3u8.mediaSequence = 0
             m3u8.mediaList = files
+            for mediaItem in m3u8.mediaList where mediaItem.duration > m3u8.targetDuration {
+                m3u8.targetDuration = mediaItem.duration + 1
+            }
             return m3u8.description
         }
         let startIndex = max(0, files.count - TSWriter.defaultSegmentCount)
         m3u8.mediaSequence = sequence - TSWriter.defaultSegmentMaxCount
         m3u8.mediaList = Array(files[startIndex..<files.count])
+        for mediaItem in m3u8.mediaList where mediaItem.duration > m3u8.targetDuration {
+            m3u8.targetDuration = mediaItem.duration + 1
+        }
         return m3u8.description
     }
-    var lockQueue: DispatchQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.TSWriter.lock")
+    var lockQueue = DispatchQueue(label: "com.haishinkit.HaishinKit.TSWriter.lock")
     var segmentMaxCount: Int = TSWriter.defaultSegmentMaxCount
     var segmentDuration: Double = TSWriter.defaultSegmentDuration
 
@@ -47,12 +53,9 @@ class TSWriter {
     private var continuityCounters: [UInt16: UInt8] = [: ]
 
     func getFilePath(_ fileName: String) -> String? {
-        for info in files {
-            if info.url.absoluteString.contains(fileName) {
-                return info.url.path
-            }
-        }
-        return nil
+        return files.first {
+            $0.url.absoluteString.contains(fileName)
+        }?.url.path
     }
 
     func writeSampleBuffer(_ PID: UInt16, streamID: UInt8, sampleBuffer: CMSampleBuffer) {
@@ -79,7 +82,7 @@ class TSWriter {
         }
 
         var packets: [TSPacket] = split(PID, PES: PES, timestamp: decodeTimeStamp)
-        let _: Bool = rotateFileHandle(decodeTimeStamp)
+        _ = rotateFileHandle(decodeTimeStamp)
 
         if streamID == 192 {
             packets[0].adaptationField?.randomAccessIndicator = true

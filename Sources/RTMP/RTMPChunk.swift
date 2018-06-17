@@ -94,7 +94,7 @@ final class RTMPChunk {
             }
 
             guard _data.isEmpty else {
-                var data: Data = Data()
+                var data = Data()
                 data.append(_data)
                 data.append(message.payload)
                 return data
@@ -118,7 +118,7 @@ final class RTMPChunk {
                 _data.append(message.timestamp.bigEndian.data)
             }
 
-            var data: Data = Data()
+            var data = Data()
             data.append(_data)
             data.append(message.payload)
 
@@ -172,7 +172,7 @@ final class RTMPChunk {
             }
 
             let end: Int = min(message.length + start, newValue.count)
-            fragmented = size + start < end
+            fragmented = size + start <= end
             message.payload = newValue.subdata(in: start..<min(size + start, end))
 
             self.message = message
@@ -197,7 +197,7 @@ final class RTMPChunk {
         if data.isEmpty {
             return nil
         }
-        guard let type: RTMPChunkType = RTMPChunkType(rawValue: (data[0] & 0b11000000) >> 6), type.ready(data) else {
+        guard let type = RTMPChunkType(rawValue: (data[0] & 0b11000000) >> 6), type.ready(data) else {
             return nil
         }
         self.size = size
@@ -208,7 +208,7 @@ final class RTMPChunk {
     func append(_ data: Data, size: Int) -> Int {
         fragmented = false
 
-        guard let message: RTMPMessage = message else {
+        guard let message = message else {
             return 0
         }
 
@@ -243,7 +243,7 @@ final class RTMPChunk {
         do {
             self.message = RTMPMessage.create(message.type.rawValue)
             self.message?.streamId = message.streamId
-            self.message?.timestamp = try buffer.readUInt24()
+            self.message?.timestamp = self.type == .two ? try buffer.readUInt24() : message.timestamp
             self.message?.length = message.length
             self.message?.payload = Data(try buffer.readBytes(message.length))
         } catch {
