@@ -144,7 +144,11 @@ final class H264Encoder: NSObject {
             logger.info(keys.joined(separator: ", "))
         }
     }
-    private(set) var status: OSStatus = noErr
+    private(set) var status: OSStatus = noErr {
+        didSet {
+            logger.error(status.description)
+        }
+    }
     private var attributes: [NSString: AnyObject] {
         var attributes: [NSString: AnyObject] = H264Encoder.defaultAttributes
         attributes[kCVPixelBufferWidthKey] = NSNumber(value: width)
@@ -256,6 +260,11 @@ final class H264Encoder: NSObject {
             sourceFrameRefcon: nil,
             infoFlagsOut: &flags
         )
+
+        var value: NSNumber = 0
+        VTSessionCopyProperty(session, key: kVTCompressionPropertyKey_AverageBitRate, allocator: nil, valueOut: &value)
+        logger.info(value.description)
+        
         if !muted {
             lastImageBuffer = imageBuffer
         }
