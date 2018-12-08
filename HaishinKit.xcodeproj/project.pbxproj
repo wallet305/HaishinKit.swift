@@ -170,7 +170,6 @@
 		29B876871CD70AE800FC07DA /* ProgramSpecific.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B876811CD70AE800FC07DA /* ProgramSpecific.swift */; };
 		29B876881CD70AE800FC07DA /* TransportStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B876821CD70AE800FC07DA /* TransportStream.swift */; };
 		29B876901CD70AFE00FC07DA /* AudioIOComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B876891CD70AFE00FC07DA /* AudioIOComponent.swift */; };
-		29B876911CD70AFE00FC07DA /* AudioStreamPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768A1CD70AFE00FC07DA /* AudioStreamPlayback.swift */; };
 		29B876921CD70AFE00FC07DA /* AVMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768B1CD70AFE00FC07DA /* AVMixer.swift */; };
 		29B876941CD70AFE00FC07DA /* SoundTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768D1CD70AFE00FC07DA /* SoundTransform.swift */; };
 		29B876961CD70AFE00FC07DA /* VisualEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768F1CD70AFE00FC07DA /* VisualEffect.swift */; };
@@ -208,7 +207,6 @@
 		29B877011CD70D5A00FC07DA /* ProgramSpecific.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B876811CD70AE800FC07DA /* ProgramSpecific.swift */; };
 		29B877021CD70D5A00FC07DA /* TransportStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B876821CD70AE800FC07DA /* TransportStream.swift */; };
 		29B877031CD70D5A00FC07DA /* AudioIOComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B876891CD70AFE00FC07DA /* AudioIOComponent.swift */; };
-		29B877041CD70D5A00FC07DA /* AudioStreamPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768A1CD70AFE00FC07DA /* AudioStreamPlayback.swift */; };
 		29B877051CD70D5A00FC07DA /* AVMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768B1CD70AFE00FC07DA /* AVMixer.swift */; };
 		29B877071CD70D5A00FC07DA /* SoundTransform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768D1CD70AFE00FC07DA /* SoundTransform.swift */; };
 		29B877081CD70D5A00FC07DA /* VideoIOComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768E1CD70AFE00FC07DA /* VideoIOComponent.swift */; };
@@ -302,7 +300,6 @@
 		29EB3E0B1ED05871001CAE8B /* TSReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2962425F1D8DB86500C451A3 /* TSReader.swift */; };
 		29EB3E0C1ED05874001CAE8B /* TSWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296242601D8DB86500C451A3 /* TSWriter.swift */; };
 		29EB3E0D1ED05877001CAE8B /* AudioIOComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B876891CD70AFE00FC07DA /* AudioIOComponent.swift */; };
-		29EB3E0E1ED0587A001CAE8B /* AudioStreamPlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768A1CD70AFE00FC07DA /* AudioStreamPlayback.swift */; };
 		29EB3E0F1ED0587C001CAE8B /* AVMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29B8768B1CD70AFE00FC07DA /* AVMixer.swift */; };
 		29EB3E101ED0587F001CAE8B /* AVMixerRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2976A47D1D48C5C700B53EF2 /* AVMixerRecorder.swift */; };
 		29EB3E111ED05881001CAE8B /* IOComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2976A4801D49025B00B53EF2 /* IOComponent.swift */; };
@@ -576,7 +573,6 @@
 		29B876811CD70AE800FC07DA /* ProgramSpecific.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgramSpecific.swift; sourceTree = "<group>"; };
 		29B876821CD70AE800FC07DA /* TransportStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransportStream.swift; sourceTree = "<group>"; };
 		29B876891CD70AFE00FC07DA /* AudioIOComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioIOComponent.swift; sourceTree = "<group>"; };
-		29B8768A1CD70AFE00FC07DA /* AudioStreamPlayback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioStreamPlayback.swift; sourceTree = "<group>"; };
 		29B8768B1CD70AFE00FC07DA /* AVMixer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AVMixer.swift; sourceTree = "<group>"; };
 		29B8768D1CD70AFE00FC07DA /* SoundTransform.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SoundTransform.swift; sourceTree = "<group>"; };
 		29B8768E1CD70AFE00FC07DA /* VideoIOComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoIOComponent.swift; sourceTree = "<group>"; };
@@ -1064,7 +1060,6 @@
 			isa = PBXGroup;
 			children = (
 				29B876891CD70AFE00FC07DA /* AudioIOComponent.swift */,
-				29B8768A1CD70AFE00FC07DA /* AudioStreamPlayback.swift */,
 				29B8768B1CD70AFE00FC07DA /* AVMixer.swift */,
 				2976A47D1D48C5C700B53EF2 /* AVMixerRecorder.swift */,
 				2976A4801D49025B00B53EF2 /* IOComponent.swift */,
@@ -1716,7 +1711,6 @@
 				29B876AC1CD70B2800FC07DA /* AMF3Serializer.swift in Sources */,
 				2916196C1E7F0768009FB344 /* CMFormatDescription+Extension.swift in Sources */,
 				29B876921CD70AFE00FC07DA /* AVMixer.swift in Sources */,
-				29B876911CD70AFE00FC07DA /* AudioStreamPlayback.swift in Sources */,
 				29D80680204828D000F4504D /* VTSession+Extension.swift in Sources */,
 				2942424D1CF4C01300D65DCB /* MD5.swift in Sources */,
 				29EA87D31E799F360043A5F8 /* ExpressibleByIntegerLiteral+Extension.swift in Sources */,
@@ -1804,7 +1798,6 @@
 				296242641D8DBA9000C451A3 /* TSWriter.swift in Sources */,
 				2958912F1EEB8F4100CE51E1 /* FLVSoundType.swift in Sources */,
 				29B877031CD70D5A00FC07DA /* AudioIOComponent.swift in Sources */,
-				29B877041CD70D5A00FC07DA /* AudioStreamPlayback.swift in Sources */,
 				29B877051CD70D5A00FC07DA /* AVMixer.swift in Sources */,
 				2992D1541ED04A2C008D9DC1 /* VideoIOComponent+Extension.swift in Sources */,
 				2926A9EF1DE6B83F0074E3D2 /* MachUtil.swift in Sources */,
@@ -1946,7 +1939,6 @@
 				29EB3E171ED05893001CAE8B /* NetClient.swift in Sources */,
 				2958912C1EEB8F1D00CE51E1 /* FLVSoundSize.swift in Sources */,
 				295891241EEB8EC500CE51E1 /* FLVAVCPacketType.swift in Sources */,
-				29EB3E0E1ED0587A001CAE8B /* AudioStreamPlayback.swift in Sources */,
 				299D6A532051A9920090E10A /* MTHKView.swift in Sources */,
 				29EB3DF31ED05773001CAE8B /* CMAudioFormatDescription+Extension.swift in Sources */,
 				29EB3DFC1ED057AC001CAE8B /* HTTPRequest.swift in Sources */,
